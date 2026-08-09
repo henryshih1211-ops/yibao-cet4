@@ -91,6 +91,7 @@
       if(activeAudio){activeAudio.pause();activeAudio=null}
       const query=encodeURIComponent(text);
       const urls=[
+        'https://dict.youdao.com/dictvoice?audio='+query+'&type=2',
         'https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=en-US&dt=t&q='+query,
         'https://translate.google.com/translate_tts?client=gtx&ie=UTF-8&tl=en-US&dt=t&q='+query
       ];
@@ -102,7 +103,7 @@
         const timer=setTimeout(()=>{audio.pause();tryGoogle()},4500);
         audio.onended=()=>{clearTimeout(timer);settled=true;activeAudio=null};
         audio.onerror=()=>{clearTimeout(timer);tryGoogle()};
-        audio.play().then(()=>{clearTimeout(timer);if(!settled)toast('正在播放 Google 英语发音，跟读一遍试试')}).catch(()=>{clearTimeout(timer);tryGoogle()});
+        audio.play().then(()=>{clearTimeout(timer);if(!settled)toast(attempt===1?'正在播放标准英语发音，跟读一遍试试':'正在播放备用英语发音，跟读一遍试试')}).catch(()=>{clearTimeout(timer);tryGoogle()});
       };
       tryGoogle();
     }
