@@ -77,7 +77,35 @@
     function currentWord(){return ALL_WORDS[(state.day*40+cursor)%Math.max(1,ALL_WORDS.length)]||{word:'persist',phonetic:'/pəˈsɪst/',meaning:'坚持；持续存在'}}
     function render(){const word=currentWord();$('#dayNumber').textContent=String(state.day+1).padStart(2,'0');$('#wordDay').textContent=state.day+1;$('#totalWords').textContent=ALL_WORDS.length.toLocaleString();$('#sourceCount').textContent=ALL_WORDS.length.toLocaleString();$('#homeMeter').style.width=(state.learned/40*100)+'%';$('#homeProgress').textContent=state.learned+' / 40';$('#wordProgress').textContent=state.learned;$('#wordNumber').textContent='WORD '+String(Math.min(40,state.learned+1)).padStart(2,'0');$('#wordText').textContent=word.word;$('#phoneticText').textContent=word.phonetic?'/ '+word.phonetic+' /':'';$('#meaningText').textContent=word.meaning;$('#wordTag').textContent=word.word==='algorithm'||word.word==='neutrality'?'2026 场景词':'CET-4 CORE';$('#masteredText').textContent='已掌握 '+state.mastered.length+' 词';$('#streakText').textContent='连续学习 '+state.streak+' 天';$('#meStreak').textContent=state.streak;$('#meMastered').textContent=state.mastered.length;$('#meDay').textContent=state.day+1;$('#meTests').textContent=Object.keys(state.tests).length;$('#tomorrowBtn').disabled=state.learned<40;$('#tomorrowBtn').textContent=state.learned>=40?'明日预习':'完成40词后解锁';const done=Object.keys(state.tests).length+(state.learned>=40?1:0);$('#taskCount').textContent=done+' / 5';$$('[data-task]').forEach(el=>el.classList.toggle('done',(el.dataset.task==='words'&&state.learned>=40)||!!state.tests[el.dataset.task]));const now=new Date();$('#dateText').textContent=now.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'})+' · 今天也为自己充一点电'}
     function showPage(id){$$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===id));$$('.page').forEach(p=>p.classList.toggle('active',p.id===id));window.scrollTo({top:0,behavior:'smooth'});if(id==='libraryPage')renderLibrary($('#librarySearch')?.value||'')}
-    function speak(text){if(!('speechSynthesis' in window)){toast('微信内置浏览器可能不支持发音，请点右上角用 Safari 或 Chrome 打开');return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';window.speechSynthesis.speak(u);toast('正在播放，跟读一遍试试')}
+    let activeAudio = null;
+    function nativeSpeak(text){
+      if(!('speechSynthesis' in window)){toast('当前浏览器暂时无法发音，请点右上角用 Safari 或 Chrome 打开');return}
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.9;u.pitch=1;
+      const voices=window.speechSynthesis.getVoices();
+      const preferred=voices.find(v=>/Google US English|Samantha|Alex|Karen|Microsoft.*English/i.test(v.name)&&/^en(-|_)/i.test(v.lang));
+      if(preferred)u.voice=preferred;
+      window.speechSynthesis.speak(u);toast('正在播放浏览器备用发音，跟读一遍试试');
+    }
+    function speak(text){
+      if(activeAudio){activeAudio.pause();activeAudio=null}
+      const query=encodeURIComponent(text);
+      const urls=[
+        'https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=en-US&dt=t&q='+query,
+        'https://translate.google.com/translate_tts?client=gtx&ie=UTF-8&tl=en-US&dt=t&q='+query
+      ];
+      let attempt=0, settled=false;
+      const fallback=()=>{if(settled)return;settled=true;nativeSpeak(text)};
+      const tryGoogle=()=>{
+        if(attempt>=urls.length){fallback();return}
+        const audio=new Audio();activeAudio=audio;audio.preload='auto';audio.src=urls[attempt++];
+        const timer=setTimeout(()=>{audio.pause();tryGoogle()},4500);
+        audio.onended=()=>{clearTimeout(timer);settled=true;activeAudio=null};
+        audio.onerror=()=>{clearTimeout(timer);tryGoogle()};
+        audio.play().then(()=>{clearTimeout(timer);if(!settled)toast('正在播放 Google 英语发音，跟读一遍试试')}).catch(()=>{clearTimeout(timer);tryGoogle()});
+      };
+      tryGoogle();
+    }
     function learn(kind){const index=(state.day*40+cursor)%Math.max(1,ALL_WORDS.length);if(kind==='known'&&!state.mastered.includes(index))state.mastered.push(index);if(kind==='review'&&!state.review.includes(index))state.review.push(index);if(state.learned<40)state.learned++;cursor=state.learned;save();render();toast(kind==='known'?'记住啦，继续下一个词':'放进复习队列，晚点再遇见一次');if(state.learned>=40)toast('今日40词完成，明天已经解锁 ✨')}
     function nextDay(){if(state.learned<40){toast('先完成今天的40个词，再开启明天');return}state.day++;state.learned=0;state.preview=true;state.date=today;state.tests={};cursor=0;save();render();toast('明日词包已开启，提前一点点也很好')}
     function renderLibrary(query){const q=(query||'').trim().toLowerCase();const list=ALL_WORDS.filter(w=>!q||w.word.toLowerCase().includes(q)||w.meaning.toLowerCase().includes(q));$('#libraryCount').textContent=list.length.toLocaleString();$('#libraryList').innerHTML=list.slice(0,120).map(w=>'<div class="library-word"><strong>'+w.word+'</strong><span>'+(w.phonetic?'/ '+w.phonetic+' / · ':'')+w.meaning+'</span></div>').join('')||'<div class="source-note">没有找到这个词，换一个关键词试试。</div>'}
