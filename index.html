@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f7f4ee" />
+  <title>怡宝 · CET-4 2026 学习岛</title>
+  <style>
+    :root {
+      --paper: #f7f4ee;
+      --paper-2: #fffdf9;
+      --ink: #243238;
+      --muted: #7d8988;
+      --line: #e9e4da;
+      --green: #3a7d68;
+      --green-dark: #275847;
+      --mint: #dff0e8;
+      --coral: #e88768;
+      --coral-soft: #fbe4da;
+      --yellow: #f8d57d;
+      --shadow: 0 14px 36px rgba(36, 50, 56, .08);
+      --radius-lg: 28px;
+      --radius-md: 19px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: #e9e5dc;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button { font: inherit; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .app-shell {
+      width: min(100%, 460px);
+      min-height: 100dvh;
+      margin: 0 auto;
+      background: var(--paper);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(36, 50, 56, .12);
+    }
+    .screen { padding: 24px 20px calc(104px + var(--safe-bottom)); }
+    .eyebrow { color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3 { letter-spacing: -.04em; }
+    h1 { font-size: 31px; line-height: 1.1; }
+    h2 { font-size: 21px; }
+    h3 { font-size: 16px; }
+    .muted { color: var(--muted); }
+    .tiny { color: var(--muted); font-size: 12px; }
+
+    .topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 21px; }
+    .topbar .date { margin-top: 7px; color: var(--muted); font-size: 13px; }
+    .avatar {
+      width: 44px; height: 44px; border-radius: 15px; background: var(--coral-soft);
+      color: #9f543d; display: grid; place-items: center; font-size: 19px; font-weight: 800;
+      transform: rotate(3deg);
+    }
+
+    .hero {
+      position: relative; overflow: hidden; background: var(--green-dark); color: white;
+      border-radius: var(--radius-lg); padding: 23px 21px 20px; margin-bottom: 15px;
+      box-shadow: var(--shadow);
+    }
+    .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
+    .hero::before { width: 180px; height: 180px; right: -80px; top: -70px; background: rgba(116, 188, 153, .18); }
+    .hero::after { width: 100px; height: 100px; right: 49px; bottom: -66px; border: 1px solid rgba(255,255,255,.18); }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .hero .eyebrow { color: #b9e4d1; }
+    .hero h2 { margin-top: 8px; font-size: 24px; }
+    .hero-copy { color: #d2e5db; font-size: 13px; line-height: 1.7; margin-top: 8px; max-width: 245px; }
+    .plant { font-size: 47px; transform: rotate(-8deg); filter: drop-shadow(0 8px 12px rgba(0,0,0,.15)); }
+    .progress-wrap { display: grid; grid-template-columns: 1fr 45px; align-items: center; gap: 12px; margin-top: 19px; }
+    .progress-track { height: 8px; border-radius: 99px; background: rgba(255,255,255,.16); overflow: hidden; }
+    .progress-bar { width: 0%; height: 100%; border-radius: inherit; background: var(--yellow); transition: width .45s ease; }
+    .progress-number { font-size: 13px; font-weight: 800; text-align: right; color: #fbe8b1; }
+
+    .checkin-card {
+      display: flex; align-items: center; gap: 14px; background: var(--paper-2); border: 1px solid var(--line);
+      border-radius: var(--radius-md); padding: 14px; box-shadow: 0 8px 24px rgba(36,50,56,.04); margin-bottom: 27px;
+    }
+    .check-icon { width: 46px; height: 46px; flex: 0 0 46px; border-radius: 16px; display: grid; place-items: center; background: var(--coral-soft); font-size: 22px; }
+    .checkin-copy { flex: 1; min-width: 0; }
+    .checkin-copy strong { font-size: 14px; display: block; margin-bottom: 4px; }
+    .checkin-copy span { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .checkin-btn { min-height: 39px; padding: 0 14px; border-radius: 13px; background: var(--coral); color: white; font-size: 12px; font-weight: 800; white-space: nowrap; transition: transform .18s ease, background .18s ease; }
+    .checkin-btn:active, .task-btn:active, .nav-btn:active { transform: scale(.96); }
+    .checkin-btn.done { background: var(--green); }
+
+    .section-heading { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+    .section-heading span { color: var(--green); font-size: 12px; font-weight: 800; }
+    .tasks { display: grid; gap: 10px; }
+    .task {
+      display: flex; align-items: center; gap: 13px; padding: 15px; background: var(--paper-2);
+      border: 1px solid var(--line); border-radius: var(--radius-md); transition: border .2s, background .2s, transform .2s;
+    }
+    .task.completed { background: #eff7f2; border-color: #cae6d7; }
+    .task.completed .task-title { text-decoration: line-through; color: var(--muted); }
+    .task-mark { width: 40px; height: 40px; flex: 0 0 40px; border-radius: 13px; display: grid; place-items: center; font-size: 19px; }
+    .task-mark.word { background: #fff0c7; }
+    .task-mark.listen { background: #e5e3fb; }
+    .task-mark.read { background: #dceff1; }
+    .task-mark.write { background: #fbe2d9; }
+    .task-info { min-width: 0; flex: 1; }
+    .task-title { display: block; font-size: 14px; font-weight: 800; margin-bottom: 5px; }
+    .task-meta { color: var(--muted); display: flex; align-items: center; gap: 5px; font-size: 11px; }
+    .task-btn { width: 32px; height: 32px; border-radius: 11px; background: #f1eee8; color: var(--green); font-size: 18px; font-weight: 700; transition: .18s; }
+    .task.completed .task-btn { background: var(--green); color: white; }
+
+    .quote {
+      margin: 27px 0 24px; padding: 17px 18px 16px; background: var(--mint); border-radius: var(--radius-md);
+      color: var(--green-dark); position: relative; overflow: hidden;
+    }
+    .quote::after { content: "“"; position: absolute; right: 13px; top: -13px; color: rgba(58,125,104,.16); font: 100px Georgia, serif; }
+    .quote p { position: relative; z-index: 1; font-family: Georgia, "Songti SC", serif; font-size: 17px; line-height: 1.35; }
+    .quote small { display: block; position: relative; z-index: 1; margin-top: 8px; color: #5f8376; font-size: 11px; }
+
+    .bottom-nav {
+      position: fixed; z-index: 5; bottom: 0; left: 50%; transform: translateX(-50%); width: min(100%, 460px);
+      padding: 9px 12px calc(9px + var(--safe-bottom)); background: rgba(255,253,249,.93); border-top: 1px solid var(--line);
+      display: grid; grid-template-columns: repeat(3, 1fr); backdrop-filter: blur(15px);
+    }
+    .nav-btn { min-height: 47px; background: transparent; color: var(--muted); display: grid; place-items: center; gap: 2px; font-size: 10px; border-radius: 13px; transition: .18s; }
+    .nav-btn .nav-icon { font-size: 20px; line-height: 1; }
+    .nav-btn.active { color: var(--green); background: #eef6f1; font-weight: 800; }
+
+    .page { display: none; animation: rise .35s ease both; }
+    .page.active { display: block; }
+    @keyframes rise { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 18px 0 26px; }
+    .stat { padding: 17px 15px; border-radius: var(--radius-md); background: var(--paper-2); border: 1px solid var(--line); }
+    .stat strong { display: block; font-size: 28px; letter-spacing: -.07em; color: var(--green-dark); margin-bottom: 4px; }
+    .stat span { color: var(--muted); font-size: 11px; }
+    .week-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 13px 0 26px; }
+    .day { text-align: center; padding: 9px 2px 8px; color: var(--muted); font-size: 10px; border-radius: 14px; }
+    .day b { display: grid; place-items: center; width: 31px; height: 31px; margin: 7px auto 0; border-radius: 50%; background: #efebe3; font-size: 12px; color: var(--ink); }
+    .day.done b { background: var(--green); color: white; }
+    .day.today { background: var(--coral-soft); color: #a35b47; font-weight: 800; }
+
+    .word-card { background: var(--green-dark); color: white; border-radius: var(--radius-lg); padding: 23px 20px; min-height: 210px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow); }
+    .word-top { display: flex; justify-content: space-between; align-items: center; }
+    .word-top span { color: #b9e4d1; font-size: 11px; }
+    .sound-btn { width: 36px; height: 36px; border-radius: 50%; color: white; background: rgba(255,255,255,.14); font-size: 17px; }
+    .word { font-size: 36px; letter-spacing: -.05em; font-weight: 800; }
+    .pronounce { color: #b9e4d1; font-family: Georgia, serif; font-size: 14px; margin: 3px 0 9px; }
+    .meaning { color: #e7f1eb; font-size: 14px; }
+    .word-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 16px; }
+    .word-actions button { min-height: 42px; border-radius: 13px; font-size: 12px; font-weight: 800; }
+    .remember { color: var(--green-dark); background: var(--yellow); }
+    .next-word { color: white; background: rgba(255,255,255,.13); }
+    .tip-card { padding: 17px; background: var(--coral-soft); border-radius: var(--radius-md); color: #8c4d3e; margin-top: 14px; font-size: 13px; line-height: 1.65; }
+    .tip-card strong { display: block; color: #6e3b30; margin-bottom: 5px; }
+
+    .streak-card { margin-top: 18px; padding: 20px; border-radius: var(--radius-lg); background: var(--paper-2); border: 1px solid var(--line); }
+    .streak-title { display: flex; justify-content: space-between; align-items: center; }
+    .streak-title strong { color: var(--green-dark); font-size: 18px; }
+    .medal { font-size: 27px; }
+    .streak-copy { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 8px 0 17px; }
+    .mini-progress { height: 9px; border-radius: 99px; background: #ece9e2; overflow: hidden; }
+    .mini-progress i { display: block; width: 62%; height: 100%; background: var(--coral); border-radius: inherit; }
+    .streak-foot { display: flex; justify-content: space-between; margin-top: 8px; color: var(--muted); font-size: 11px; }
+    .practice-grid { display: grid; gap: 10px; }
+    .practice-card { display: flex; align-items: center; gap: 13px; width: 100%; padding: 15px; text-align: left; background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--radius-md); }
+    .practice-card:active { transform: scale(.98); }
+    .practice-card .practice-icon { width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center; border-radius: 14px; font-size: 18px; font-weight: 900; }
+    .practice-card .practice-body { flex: 1; min-width: 0; }
+    .practice-card strong { display: block; font-size: 14px; margin-bottom: 5px; }
+    .practice-card span { color: var(--muted); font-size: 11px; }
+    .practice-card b { color: var(--green); font-size: 19px; }
+    .quiz-box { display: none; margin-top: 14px; padding: 18px; background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--radius-md); }
+    .quiz-box.show { display: block; animation: rise .25s ease both; }
+    .quiz-box .eyebrow { margin-bottom: 7px; }
+    .quiz-box p { font-size: 14px; font-weight: 800; line-height: 1.6; }
+    .quiz-options { display: grid; gap: 8px; margin-top: 14px; }
+    .quiz-options button { padding: 11px 12px; color: var(--ink); background: #f3f0ea; border-radius: 12px; text-align: left; font-size: 12px; }
+    .quiz-options button.correct { color: var(--green-dark); background: var(--mint); font-weight: 800; }
+    .quiz-feedback { color: var(--green); font-size: 11px; margin-top: 12px; line-height: 1.55; }
+
+    .toast { position: fixed; z-index: 10; left: 50%; bottom: calc(88px + var(--safe-bottom)); transform: translate(-50%, 15px); opacity: 0; pointer-events: none; background: var(--ink); color: white; border-radius: 99px; padding: 11px 16px; font-size: 12px; white-space: nowrap; transition: .25s ease; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .confetti { position: fixed; z-index: 11; pointer-events: none; font-size: 19px; animation: pop 900ms ease-out forwards; }
+    @keyframes pop { 0% { opacity: 1; transform: translate(0,0) scale(.7); } 100% { opacity: 0; transform: translate(var(--x), var(--y)) rotate(260deg) scale(1.2); } }
+
+    @media (min-width: 461px) {
+      .app-shell { min-height: 850px; margin: 24px auto; border-radius: 32px; }
+      .bottom-nav { bottom: 24px; border-radius: 0 0 32px 32px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <div class="screen">
+      <section class="page active" id="homePage">
+        <header class="topbar">
+          <div>
+            <div class="eyebrow">怡宝 · CET-4 2026</div>
+            <h1>早上好，<span id="nameText">怡宝</span> 👋</h1>
+            <p class="date" id="todayText">今天也为自己充一点电</p>
+          </div>
+          <div class="avatar">怡</div>
+        </header>
+
+        <article class="hero">
+          <div class="hero-content">
+            <div class="hero-head">
+              <div>
+                <div class="eyebrow">今日学习进度</div>
+                <h2 id="progressTitle">慢慢来，今天完成一点点</h2>
+              </div>
+              <div class="plant">🌱</div>
+            </div>
+            <p class="hero-copy">四级不是一口气跑完的路。把今天的 4 个小任务完成，就已经在变厉害了。</p>
+            <div class="progress-wrap">
+              <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+              <div class="progress-number" id="progressNumber">0 / 4</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="checkin-card">
+          <div class="check-icon">🔥</div>
+          <div class="checkin-copy"><strong id="streakText">连续学习 0 天</strong><span>今天完成任意任务，就能守住这条小火苗</span></div>
+          <button class="checkin-btn" id="checkinBtn">今日打卡</button>
+        </article>
+
+        <div class="section-heading"><h2>今天学什么</h2><span id="taskHint">4 个小目标</span></div>
+        <div class="tasks">
+          <article class="task" data-task="word"><div class="task-mark word">A</div><div class="task-info"><span class="task-title">词汇 · 高频词 20 个</span><span class="task-meta">⏱ 15 分钟　·　四级核心词</span></div><button class="task-btn" aria-label="完成词汇任务">＋</button></article>
+          <article class="task" data-task="listen"><div class="task-mark listen">◖</div><div class="task-info"><span class="task-title">听力 · 真题精听 1 段</span><span class="task-meta">⏱ 20 分钟　·　Section 2</span></div><button class="task-btn" aria-label="完成听力任务">＋</button></article>
+          <article class="task" data-task="read"><div class="task-mark read">▤</div><div class="task-info"><span class="task-title">阅读 · 长篇阅读 1 篇</span><span class="task-meta">⏱ 25 分钟　·　匹配题</span></div><button class="task-btn" aria-label="完成阅读任务">＋</button></article>
+          <article class="task" data-task="write"><div class="task-mark write">✎</div><div class="task-info"><span class="task-title">写作 · 积累 3 个好句</span><span class="task-meta">⏱ 10 分钟　·　表达升级</span></div><button class="task-btn" aria-label="完成写作任务">＋</button></article>
+        </div>
+
+        <article class="quote"><p>“A little progress each day adds up to big results.”</p><small>每天进步一点点，最后会变成很大的成果。</small></article>
+      </section>
+
+      <section class="page" id="wordsPage">
+        <header class="topbar"><div><div class="eyebrow">VOCABULARY · 词汇</div><h1>今天的单词</h1><p class="date">不贪多，把一个词真的记住</p></div><div class="avatar">A</div></header>
+        <article class="word-card">
+          <div class="word-top"><span id="wordIndex">TODAY'S WORD · 01 / 05</span><button class="sound-btn" id="soundBtn" aria-label="播放发音">◉</button></div>
+          <div><div class="word" id="wordText">persist</div><div class="pronounce" id="pronounceText">/ pəˈsɪst /</div><div class="meaning" id="meaningText">v. 坚持；持续存在</div></div>
+          <div class="word-actions"><button class="remember" id="rememberBtn">✓ 我记住了</button><button class="next-word" id="nextWordBtn">下一个 →</button></div>
+        </article>
+        <article class="tip-card"><strong>记忆小贴士</strong><span id="tipText">persist 里有 “sist”，像是把自己“立”住。坚持住，就会有结果。</span></article>
+        <div class="section-heading" style="margin-top:28px"><h2>复习节奏</h2><span>艾宾浩斯</span></div>
+        <div class="streak-card"><div class="streak-title"><strong>今日已复习 12 / 20</strong><span class="medal">🏅</span></div><p class="streak-copy">再记 8 个，今天的词汇小岛就点亮啦。记得晚上回来快速看一遍。</p><div class="mini-progress"><i></i></div><div class="streak-foot"><span>开始</span><span>还差 8 个</span></div></div>
+      </section>
+
+      <section class="page" id="practicePage">
+        <header class="topbar"><div><div class="eyebrow">PRACTICE · 能力测评</div><h1>练一练，就知道</h1><p class="date">每次只做一小题，把知识变成分数</p></div><div class="avatar">✦</div></header>
+        <article class="hero"><div class="hero-content"><div class="eyebrow">CET-4 MOCK MAP</div><h2>四级笔试<br><span style="color:var(--yellow)">57 题 · 125 分钟</span></h2><p class="hero-copy">按真实试卷结构拆成可以随时完成的小练习。</p></div></article>
+        <div class="section-heading" style="margin-top:27px"><h2>选择一个模块</h2><span>即时反馈</span></div>
+        <div class="practice-grid">
+          <button class="practice-card" data-quiz="listening"><div class="practice-icon" style="background:#e6e3fb;color:#716caa">◖</div><div class="practice-body"><strong>听力微练 · 35%</strong><span>听音识义 · 抓住转折信号词</span></div><b>→</b></button>
+          <button class="practice-card" data-quiz="reading"><div class="practice-icon" style="background:#dfeef2;color:#4f8191">▤</div><div class="practice-body"><strong>阅读微练 · 35%</strong><span>定位信息 · 判断作者态度</span></div><b>→</b></button>
+          <button class="practice-card" data-quiz="writing"><div class="practice-icon" style="background:#fbe2d9;color:#b7684f">✎</div><div class="practice-body"><strong>写作微练 · 15%</strong><span>句型升级 · 把普通表达写得更有力</span></div><b>→</b></button>
+          <button class="practice-card" data-quiz="translation"><div class="practice-icon" style="background:#fff0c7;color:#a97c25">译</div><div class="practice-body"><strong>翻译微练 · 15%</strong><span>文化表达 · 先找主干再补细节</span></div><b>→</b></button>
+        </div>
+        <div class="quiz-box" id="quizBox"><div class="eyebrow" id="quizEyebrow">MICRO TEST</div><p id="quizQuestion"></p><div class="quiz-options" id="quizOptions"></div><div class="quiz-feedback" id="quizFeedback"></div></div>
+      </section>
+
+      <section class="page" id="growthPage">
+        <header class="topbar"><div><div class="eyebrow">YOUR JOURNEY · 成长</div><h1>一点点，走得很远</h1><p class="date">你已经比刚开始时更靠近目标了</p></div><div class="avatar">✦</div></header>
+        <article class="hero"><div class="hero-content"><div class="eyebrow">四级备考总进度</div><h2>距离上岸，又近了一步</h2><p class="hero-copy">保持现在的节奏，目标分数会慢慢变得清晰。</p><div class="progress-wrap"><div class="progress-track"><div class="progress-bar" style="width: 38%"></div></div><div class="progress-number">38%</div></div></div></article>
+        <div class="stats-grid"><div class="stat"><strong id="daysStat">0</strong><span>连续学习天数</span></div><div class="stat"><strong>286</strong><span>累计词汇量</span></div><div class="stat"><strong>12.5h</strong><span>本周学习时长</span></div><div class="stat"><strong>86%</strong><span>任务完成率</span></div></div>
+        <div class="section-heading"><h2>本周打卡</h2><span>继续保持</span></div>
+        <div class="week-strip"><div class="day done">一<b>✓</b></div><div class="day done">二<b>✓</b></div><div class="day done">三<b>✓</b></div><div class="day today">四<b>今</b></div><div class="day">五<b>5</b></div><div class="day">六<b>6</b></div><div class="day">日<b>7</b></div></div>
+        <article class="streak-card"><div class="streak-title"><strong>小目标：连续 7 天</strong><span class="medal">🌿</span></div><p class="streak-copy">已经完成 3 天啦。每次打开页面，先做最简单的一个任务，行动会带来动力。</p><div class="mini-progress"><i style="width:43%"></i></div><div class="streak-foot"><span>3 天</span><span>目标 7 天</span></div></article>
+      </section>
+    </div>
+
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-btn active" data-page="homePage"><span class="nav-icon">⌂</span><span>今日</span></button>
+      <button class="nav-btn" data-page="wordsPage"><span class="nav-icon">Aa</span><span>词汇</span></button>
+      <button class="nav-btn" data-page="practicePage"><span class="nav-icon">✦</span><span>测评</span></button>
+      <button class="nav-btn" data-page="growthPage"><span class="nav-icon">✦</span><span>成长</span></button>
+    </nav>
+    <div class="toast" id="toast" role="status"></div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'cet4-island-progress-v1';
+    const defaultState = { tasks: { word: false, listen: false, read: false, write: false }, checkedIn: false, streak: 0 };
+    const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || defaultState;
+    const words = [
+      { word: 'persist', pronounce: '/ pəˈsɪst /', meaning: 'v. 坚持；持续存在', tip: 'persist 里有 “sist”，像是把自己“立”住。坚持住，就会有结果。' },
+      { word: 'enhance', pronounce: '/ ɪnˈhæns /', meaning: 'v. 提高；增强', tip: 'en + hance：把能力往上“加”一点，就是 enhance。' },
+      { word: 'vital', pronounce: '/ ˈvaɪtl /', meaning: 'adj. 至关重要的；充满活力的', tip: 'vit = life（生命），vital 就是和生命一样重要。' },
+      { word: 'algorithm', pronounce: '/ ˈælɡərɪðəm /', meaning: 'n. 算法', tip: '阅读科技文章时，algorithm 常和 data、recommendation 一起出现。' },
+      { word: 'hypothesis', pronounce: '/ haɪˈpɒθəsɪs /', meaning: 'n. 假设；假说', tip: '看到 test / support / reject，常常就是在讨论 hypothesis。' },
+      { word: 'skeptical', pronounce: '/ ˈskeptɪkl /', meaning: 'adj. 怀疑的；持保留态度的', tip: '作者态度题里，skeptical 通常对应 doubtful、questioning。' },
+      { word: 'neutrality', pronounce: '/ njuːˈtræləti /', meaning: 'n. 中立；中和', tip: 'carbon neutrality 是 2026 备考中值得熟悉的写译表达。' },
+      { word: 'perspective', pronounce: '/ pəˈspektɪv /', meaning: 'n. 观点；视角', tip: 'perspect 里有“看”，所以 perspective 是看问题的角度。' },
+      { word: 'attribute', pronounce: '/ əˈtrɪbjuːt /', meaning: 'v. 把……归因于', tip: '听力里听到 attribute A to B，重点往往在 B。' },
+      { word: 'nevertheless', pronounce: '/ ˌnevəðəˈles /', meaning: 'adv. 然而；尽管如此', tip: '转折后是重点：听到 nevertheless，耳朵要立刻跟上。' }
+    ];
+    let wordCursor = 0;
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+    function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    function completedCount() { return Object.values(state.tasks).filter(Boolean).length; }
+    function showToast(message) { const toast = $('#toast'); toast.textContent = message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove('show'), 1900); }
+    function celebrate() {
+      ['✦', '✿', '•', '✦', '✿'].forEach((symbol, i) => { const el = document.createElement('span'); el.className = 'confetti'; el.textContent = symbol; el.style.left = (42 + Math.random() * 16) + '%'; el.style.bottom = '120px'; el.style.color = ['#e88768','#3a7d68','#f8c95c'][i % 3]; el.style.setProperty('--x', (Math.random() * 170 - 85) + 'px'); el.style.setProperty('--y', (-80 - Math.random() * 150) + 'px'); el.style.animationDelay = (i * 40) + 'ms'; document.body.appendChild(el); setTimeout(() => el.remove(), 1000); });
+    }
+    function render() {
+      const count = completedCount();
+      $('#progressBar').style.width = (count / 4 * 100) + '%';
+      $('#progressNumber').textContent = count + ' / 4';
+      $('#taskHint').textContent = count === 4 ? '全部完成 · 太棒了' : (4 - count) + ' 个待完成';
+      $('#progressTitle').textContent = count === 4 ? '今天的你，闪闪发光' : count > 1 ? '很棒，节奏已经起来了' : '慢慢来，今天完成一点点';
+      $('#streakText').textContent = '连续学习 ' + state.streak + ' 天';
+      $('#daysStat').textContent = state.streak;
+      $$('.task').forEach((task) => { const done = state.tasks[task.dataset.task]; task.classList.toggle('completed', done); task.querySelector('.task-btn').textContent = done ? '✓' : '＋'; });
+      $('#checkinBtn').textContent = state.checkedIn ? '已打卡 ✓' : '今日打卡';
+      $('#checkinBtn').classList.toggle('done', state.checkedIn);
+      const now = new Date();
+      $('#todayText').textContent = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' }) + ' · 今天也为自己充一点电';
+    }
+    function setWord() { const item = words[wordCursor]; $('#wordIndex').textContent = 'TODAY\'S WORD · ' + String(wordCursor + 1).padStart(2, '0') + ' / 10'; $('#wordText').textContent = item.word; $('#pronounceText').textContent = item.pronounce; $('#meaningText').textContent = item.meaning; $('#tipText').textContent = item.tip; }
+    const quizzes = {
+      listening: { label: 'LISTENING · 听力', question: '听到 “The improvement is attributed to better learning habits.”，improvement 归因于什么？', options: ['更好的学习习惯', '更长的学习时间', '新的学习软件', '老师的帮助'], answer: 0, feedback: '答对了！attribute A to B，答案通常是 B。' },
+      reading: { label: 'READING · 阅读', question: 'The article offers a fresh perspective on urban life. 最接近的意思是：', options: ['文章批评了城市生活', '文章提供了看待城市生活的新角度', '文章只介绍了城市历史', '文章预测城市会消失'], answer: 1, feedback: '答对了！perspective = 观点、视角。' },
+      writing: { label: 'WRITING · 写作', question: '请用英语写一句话：睡眠对身心健康都至关重要。', options: ['Sleep is vital to both physical and mental health.', 'Sleep is very important for people.', 'People need to sleep every day.', 'Health is something we all want.'], answer: 0, feedback: '推荐表达：Sleep is vital to both physical and mental health.' },
+      translation: { label: 'TRANSLATION · 翻译', question: '请翻译：广泛阅读能够提高你的批判性思维能力。', options: ['Reading widely can enhance your ability to think critically.', 'Reading is good for your mind.', 'Books help people learn new things.', 'Critical thinking is difficult.'], answer: 0, feedback: '推荐表达：Reading widely can enhance your ability to think critically.' }
+    };
+    $$('.practice-card').forEach((card) => card.addEventListener('click', () => { const quiz = quizzes[card.dataset.quiz]; $('#quizBox').classList.add('show'); $('#quizEyebrow').textContent = quiz.label; $('#quizQuestion').textContent = quiz.question; $('#quizFeedback').textContent = ''; $('#quizOptions').innerHTML = ''; quiz.options.forEach((option, index) => { const button = document.createElement('button'); button.textContent = String.fromCharCode(65 + index) + '  ' + option; button.addEventListener('click', () => { $$('#quizOptions button').forEach((item) => item.classList.remove('correct')); if (index === quiz.answer) { button.classList.add('correct'); $('#quizFeedback').textContent = quiz.feedback; } else $('#quizFeedback').textContent = '再想一下，先找关键词和句子主干。'; }); $('#quizOptions').appendChild(button); }); $('#quizBox').scrollIntoView({ behavior: 'smooth', block: 'center' }); }));
+
+    $$('.task').forEach((task) => task.addEventListener('click', () => { const key = task.dataset.task; state.tasks[key] = !state.tasks[key]; save(); render(); if (state.tasks[key]) { showToast('完成啦，给自己一个小小的掌声 👏'); celebrate(); } }));
+    $('#checkinBtn').addEventListener('click', () => { if (!state.checkedIn) { state.checkedIn = true; if (completedCount() > 0) state.streak = Math.max(1, state.streak + 1); save(); render(); showToast('打卡成功，今天也被你认真对待了 ✨'); celebrate(); } else showToast('今天已经打过卡啦，明天见'); });
+    $$('.nav-btn').forEach((button) => button.addEventListener('click', () => { $$('.nav-btn').forEach((b) => b.classList.remove('active')); button.classList.add('active'); $$('.page').forEach((page) => page.classList.remove('active')); $('#' + button.dataset.page).classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }));
+    $('#nextWordBtn').addEventListener('click', () => { wordCursor = (wordCursor + 1) % words.length; setWord(); showToast('换一个，继续认识新朋友'); });
+    $('#rememberBtn').addEventListener('click', () => { showToast('记住啦，晚上再见它一次会更牢'); $('#rememberBtn').textContent = '已记住 ✓'; });
+    $('#soundBtn').addEventListener('click', () => { if ('speechSynthesis' in window) { const utterance = new SpeechSynthesisUtterance($('#wordText').textContent); utterance.lang = 'en-US'; window.speechSynthesis.cancel(); window.speechSynthesis.speak(utterance); showToast('听一遍，再跟读一遍'); } else showToast('你的浏览器暂不支持发音'); });
+    render(); setWord();
+  </script>
+</body>
+</html>
